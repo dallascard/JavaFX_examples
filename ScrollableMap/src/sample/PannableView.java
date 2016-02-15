@@ -1,5 +1,6 @@
 package sample;
 
+import java.io.File;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -16,7 +17,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.scene.Group;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 /*
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -33,7 +37,8 @@ public class PannableView extends Application {
     private Boolean mouseMoved;
 
     @Override public void init() {
-        backgroundImage = new Image("http://www.narniaweb.com/wp-content/uploads/2009/08/NarniaMap.jpg");
+        File file = new File("/Users/dcard/Desktop/NarniaMap.jpg");
+        backgroundImage = new Image(file.toURI().toString());
     }
 
     @Override public void start(Stage stage) throws Exception {
@@ -41,17 +46,28 @@ public class PannableView extends Application {
 
         stage.setTitle("Drag the mouse to pan the map");
 
-        // construct the scene contents over a stacked background.
-        StackPane layout = new StackPane();
-        layout.getChildren().setAll(
-                new ImageView(backgroundImage),
-                createKillButton()
-        );
+        // create a canvas, and draw something in it
+        Canvas canvas = new Canvas(2200, 2200);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(Color.GREEN);
+        gc.setStroke(Color.BLUE);
+        gc.setLineWidth(5);
+        gc.strokeLine(40, 10, 10, 40);
 
         // create a borderPane with subpanes
         BorderPane border = new BorderPane();
 
+        // add something to the top pane
         border.setTop(addHBox());
+
+        // construct the scene contents over a stacked background.
+        StackPane layout = new StackPane();
+        layout.getChildren().setAll(
+                new ImageView(backgroundImage),
+                canvas,
+                createKillButton()
+        );
+
 
         // wrap the scene contents in a pannable scroll pane.
         final ScrollPane scroll = createScrollPane(layout);
@@ -94,6 +110,14 @@ public class PannableView extends Application {
                 }
             }
         });
+
+        canvas.setOnMousePressed(event -> {
+            gc.setFill(Color.GREEN);
+            gc.setStroke(Color.BLUE);
+            gc.setLineWidth(5);
+            gc.fillOval(event.getX(), event.getY(), 10, 10);
+        });
+
 
     }
 
