@@ -34,11 +34,13 @@ import javafx.event.*;
 public class PannableView extends Application {
     private Image backgroundImage;
 
+    private int draw;
     private Boolean mouseMoved;
 
     @Override public void init() {
         File file = new File("/Users/dcard/Desktop/NarniaMap.jpg");
         backgroundImage = new Image(file.toURI().toString());
+        draw = 1;
     }
 
     @Override public void start(Stage stage) throws Exception {
@@ -111,13 +113,24 @@ public class PannableView extends Application {
             }
         });
 
-        canvas.setOnMousePressed(event -> {
-            gc.setFill(Color.GREEN);
-            gc.setStroke(Color.BLUE);
-            gc.setLineWidth(5);
-            gc.fillOval(event.getX(), event.getY(), 10, 10);
-        });
 
+        int radius = 10;
+        canvas.setOnMouseClicked(event -> {
+            if (!mouseMoved) {
+                if (draw > 0) {
+                    gc.setFill(Color.GREEN);
+                    //gc.setStroke(Color.BLUE);
+                    //gc.setLineWidth(5);
+                    // draw an oval
+                    gc.fillOval(event.getX() - radius / 2, event.getY() - radius / 2, radius, radius);
+                }
+                else {
+                    // erase a rectangle
+                    gc.clearRect(event.getX() - radius / 2, event.getY() - radius / 2, radius, radius);
+                }
+                draw *= -1;
+            }
+        });
 
     }
 
